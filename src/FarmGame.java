@@ -4,6 +4,7 @@ import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.math.BigInteger;
+import java.math.BigDecimal;
 
 // Define the Crop class
 class Crop {
@@ -54,8 +55,8 @@ public class FarmGame implements ActionListener {
     private JButton upgradeButton;
     private JButton buy1AcreButton, buy500AcresButton, buy250KAcresButton, buy200MAcresButton, buy75BAcresButton, buy50TAcresButton, buy20QaAcresButton, buy8QiAcresButton, buy4SxAcresButton, buy2SpAcresButton, buy1OcAcresButton, buy1NoAcresButton, buy1DcAcresButton;
     private List<Crop> crops = new ArrayList<>();
-    private BigInteger money = BigInteger.ZERO;
-    private BigInteger land = BigInteger.ONE;
+    private BigInteger money = new BigInteger("0");
+    private BigInteger land = new BigInteger("1");
     private Timer timer;
 
     // Constructor for the FarmGame class
@@ -421,7 +422,7 @@ public class FarmGame implements ActionListener {
 
     // Helper method to update the money label
     private void updateMoneyLabel() {
-        moneyLabel.setText("Money: $" + money.toString());
+        moneyLabel.setText("Money: $" + formatBigInteger(money));
         // Update money label on all tabs
         for (int i = 0; i < tabbedPane.getTabCount(); i++) {
             Component tabComponent = tabbedPane.getComponentAt(i);
@@ -429,7 +430,7 @@ public class FarmGame implements ActionListener {
                 JPanel tabPanel = (JPanel) tabComponent;
                 for (Component component : tabPanel.getComponents()) {
                     if (component instanceof JLabel && ((JLabel) component).getText().startsWith("Money")) {
-                        ((JLabel) component).setText("Money: $" + money.toString());
+                        ((JLabel) component).setText("Money: $" + formatBigInteger(money));
                     }
                 }
             }
@@ -438,7 +439,7 @@ public class FarmGame implements ActionListener {
 
     // Helper method to update the land label
     private void updateLandLabel() {
-        landLabel.setText("Land: " + land.toString() + " acres");
+        landLabel.setText("Land: " + formatBigInteger(land) + " acres");
         // Update land label on all tabs
         for (int i = 0; i < tabbedPane.getTabCount(); i++) {
             Component tabComponent = tabbedPane.getComponentAt(i);
@@ -446,11 +447,25 @@ public class FarmGame implements ActionListener {
                 JPanel tabPanel = (JPanel) tabComponent;
                 for (Component component : tabPanel.getComponents()) {
                     if (component instanceof JLabel && ((JLabel) component).getText().startsWith("Land")) {
-                        ((JLabel) component).setText("Land: " + land.toString() + " acres");
+                        ((JLabel) component).setText("Land: " + formatBigInteger(land) + " acres");
                     }
                 }
             }
         }
+    }
+
+    private String formatBigInteger(BigInteger value) {
+        BigDecimal decimalValue = new BigDecimal(value);
+        String[] units = {"", "K", "M", "B", "T", "Qa", "Qi", "Sx", "Sp", "Oc", "No", "Dc"};
+        int unitIndex = 0;
+        BigDecimal thousand = new BigDecimal(1000);
+
+        while (decimalValue.compareTo(thousand) >= 0 && unitIndex < units.length - 1) {
+            decimalValue = decimalValue.divide(thousand);
+            unitIndex++;
+        }
+
+        return String.format("%.2f%s", decimalValue, units[unitIndex]);
     }
 
     // Helper method to update the crop list panel

@@ -41,6 +41,18 @@ class Crop {
     public BigInteger getAcres() {
         return acres;
     }
+
+    public void setGrowthTime(int growthTime) {
+        this.growthTime = growthTime;
+    }
+
+    public void setYield(BigInteger yield) {
+        this.yield = yield;
+    }
+
+    public void setAcres(BigInteger acres) {
+        this.acres = acres;
+    }
 }
 
 // Define the FarmGame class which implements the ActionListener interface
@@ -48,16 +60,26 @@ public class FarmGame implements ActionListener {
 
     // Instance variables declaration
     private JFrame frame;
-    private JTabbedPane tabbedPane;
-    private JPanel plantPanel, buyLandPanel, upgradePanel;
+    private JTabbedPane tabbedPane, tabbedUpgradePane;
+    private JPanel plantPanel, buyLandPanel, upgradePanel, cropSpeedPanel, cropYieldPanel, landEfficiencyPanel,
+            incomeBoostPanel, autoFarmingPanel, specialUpgradesPanel;
     private JLabel moneyLabel, landLabel;
-    private JButton plantWheat, plantCorn, plantCarrots, plantTomatoes, plantPotatoes, plantApples, plantGrapes, plantCoffee, plantCacao, plantVanilla, plantSaffron, plantTruffles, plantMagicBeans;
-    private JButton upgradeButton;
-    private JButton buy1AcreButton, buy500AcresButton, buy250KAcresButton, buy200MAcresButton, buy75BAcresButton, buy50TAcresButton, buy20QaAcresButton, buy8QiAcresButton, buy4SxAcresButton, buy2SpAcresButton, buy1OcAcresButton, buy1NoAcresButton, buy1DcAcresButton;
+    private JButton plantWheat, plantCorn, plantCarrots, plantTomatoes, plantPotatoes, plantApples, plantGrapes,
+            plantCoffee, plantCacao, plantVanilla, plantSaffron, plantTruffles, plantMagicBeans, growthSpeed1,
+            growthSpeed2, growthSpeed3, growthSpeed4, growthSpeed5, growthSpeed6, growthSpeed7, growthSpeed8,
+            growthSpeed9, yieldBoost1, yieldBoost2, yieldBoost3, yieldBoost4, yieldBoost5, yieldBoost6, yieldBoost7,
+            yieldBoost8, yieldBoost9, yieldBoost10, landEfficiency1, landEfficiency2, landEfficiency3, landEfficiency4,
+            landEfficiency5, autoFarm1, autoFarm2, autoFarm3, marketExpansion1, marketExpansion2, marketExpansion3,
+            marketExpansion4, marketExpansion5, marketExpansion6, marketExpansion7, marketExpansion8, marketExpansion9,
+            marketExpansion10, buy1AcreButton, buy500AcresButton, buy250KAcresButton, buy200MAcresButton,
+            buy75BAcresButton, buy50TAcresButton, buy20QaAcresButton, buy8QiAcresButton, buy4SxAcresButton,
+            buy2SpAcresButton, buy1OcAcresButton, buy1NoAcresButton, buy1DcAcresButton;
     private List<Crop> crops = new ArrayList<>();
-    private BigInteger money = new BigInteger("0");
+    private BigInteger money = new BigInteger("500000000000000000000000000");
     private BigInteger land = new BigInteger("1");
     private Timer timer;
+    private double growthSpeedMultiplier = 1.0;
+    private double yieldMultiplier = 1.0;
 
     // Constructor for the FarmGame class
     public FarmGame() {
@@ -67,6 +89,7 @@ public class FarmGame implements ActionListener {
 
         // Create tabbed pane
         tabbedPane = new JTabbedPane();
+        tabbedUpgradePane = new JTabbedPane();
 
         // Create panels for each tab
         plantPanel = new JPanel();
@@ -75,11 +98,30 @@ public class FarmGame implements ActionListener {
         buyLandPanel.setLayout(new FlowLayout());
         upgradePanel = new JPanel();
         upgradePanel.setLayout(new FlowLayout());
+        cropSpeedPanel = new JPanel();
+        cropSpeedPanel.setLayout(new BoxLayout(cropSpeedPanel, BoxLayout.Y_AXIS));
+        cropYieldPanel = new JPanel();
+        cropYieldPanel.setLayout(new BoxLayout(cropYieldPanel, BoxLayout.Y_AXIS));
+        landEfficiencyPanel = new JPanel();
+        landEfficiencyPanel.setLayout(new BoxLayout(landEfficiencyPanel, BoxLayout.Y_AXIS));
+        incomeBoostPanel = new JPanel();
+        incomeBoostPanel.setLayout(new BoxLayout(incomeBoostPanel, BoxLayout.Y_AXIS));
+        autoFarmingPanel = new JPanel();
+        autoFarmingPanel.setLayout(new BoxLayout(autoFarmingPanel, BoxLayout.Y_AXIS));
+        specialUpgradesPanel = new JPanel();
+        specialUpgradesPanel.setLayout(new BoxLayout(specialUpgradesPanel, BoxLayout.Y_AXIS));
 
         // Add tabs to the tabbed pane
         tabbedPane.addTab("Plant Crops", plantPanel);
         tabbedPane.addTab("Buy Land", buyLandPanel);
         tabbedPane.addTab("Upgrades", upgradePanel);
+
+        tabbedUpgradePane.addTab("Crop Speed", cropSpeedPanel);
+        tabbedUpgradePane.addTab("Crop Yield", cropYieldPanel);
+        tabbedUpgradePane.addTab("Land Efficiency", landEfficiencyPanel);
+        tabbedUpgradePane.addTab("Income Boost", incomeBoostPanel);
+        tabbedUpgradePane.addTab("Auto Farming", autoFarmingPanel);
+        tabbedUpgradePane.addTab("Special", specialUpgradesPanel);
 
         // Create labels for money and land
         moneyLabel = new JLabel("Money: $" + money.toString());
@@ -112,21 +154,19 @@ public class FarmGame implements ActionListener {
         plantTruffles.addActionListener(this);
         plantMagicBeans = new JButton("Plant Magic Beans (1Dc acres, 20 sec, $10Dc)");
         plantMagicBeans.addActionListener(this);
-        upgradeButton = new JButton("Upgrade (TBA)");
-        upgradeButton.addActionListener(this);
 
         // Initialize buy land buttons
-        buy1AcreButton = new JButton     ("     Buy 1 Acre ($50)     ");
+        buy1AcreButton = new JButton("     Buy 1 Acre ($50)     ");
         buy1AcreButton.addActionListener(this);
-        buy500AcresButton = new JButton  ("  Buy 500 Acres ($25K)  ");
+        buy500AcresButton = new JButton("  Buy 500 Acres ($25K)  ");
         buy500AcresButton.addActionListener(this);
         buy250KAcresButton = new JButton(" Buy 250K Acres ($12.5M) ");
         buy250KAcresButton.addActionListener(this);
-        buy200MAcresButton = new JButton ("  Buy 200M Acres ($10B)  ");
+        buy200MAcresButton = new JButton("  Buy 200M Acres ($10B)  ");
         buy200MAcresButton.addActionListener(this);
         buy75BAcresButton = new JButton(" Buy 75B Acres ($3.75T) ");
         buy75BAcresButton.addActionListener(this);
-        buy50TAcresButton = new JButton (" Buy 50T Acres ($2.5Qa) ");
+        buy50TAcresButton = new JButton(" Buy 50T Acres ($2.5Qa) ");
         buy50TAcresButton.addActionListener(this);
         buy20QaAcresButton = new JButton("  Buy 20Qa Acres ($1Qi)  ");
         buy20QaAcresButton.addActionListener(this);
@@ -143,6 +183,68 @@ public class FarmGame implements ActionListener {
         buy1DcAcresButton = new JButton("  Buy 1Dc Acres ($50Dc)  ");
         buy1DcAcresButton.addActionListener(this);
 
+        // Initialize growth speed boost buttons with updated prices
+        growthSpeed1 = new JButton("Growth Speed Boost 1 (100B)");
+        growthSpeed1.addActionListener(this);
+        growthSpeed2 = new JButton("Growth Speed Boost 2 (100T)");
+        growthSpeed2.addActionListener(this);
+        growthSpeed3 = new JButton("Growth Speed Boost 3 (100Qa)");
+        growthSpeed3.addActionListener(this);
+        growthSpeed4 = new JButton("Growth Speed Boost 4 (100Qi)");
+        growthSpeed4.addActionListener(this);
+        growthSpeed5 = new JButton("Growth Speed Boost 5 (100Sx)");
+        growthSpeed5.addActionListener(this);
+        growthSpeed6 = new JButton("Growth Speed Boost 6 (100Sp)");
+        growthSpeed6.addActionListener(this);
+        growthSpeed7 = new JButton("Growth Speed Boost 7 (100Oc)");
+        growthSpeed7.addActionListener(this);
+        growthSpeed8 = new JButton("Growth Speed Boost 8 (100No)");
+        growthSpeed8.addActionListener(this);
+        growthSpeed9 = new JButton("Growth Speed Boost 9 (100Dc)");
+        growthSpeed9.addActionListener(this);
+
+        // Initialize yield boost buttons
+        yieldBoost1 = new JButton("Yield Boost 1 (1M)");
+        yieldBoost1.addActionListener(this);
+        yieldBoost2 = new JButton("Yield Boost 2 (1B)");
+        yieldBoost2.addActionListener(this);
+        yieldBoost3 = new JButton("Yield Boost 3 (1T)");
+        yieldBoost3.addActionListener(this);
+        yieldBoost4 = new JButton("Yield Boost 4 (1Qa)");
+        yieldBoost4.addActionListener(this);
+        yieldBoost5 = new JButton("Yield Boost 5 (1Qi)");
+        yieldBoost5.addActionListener(this);
+        yieldBoost6 = new JButton("Yield Boost 6 (1Sx)");
+        yieldBoost6.addActionListener(this);
+        yieldBoost7 = new JButton("Yield Boost 7 (1Sp)");
+        yieldBoost7.addActionListener(this);
+        yieldBoost8 = new JButton("Yield Boost 8 (1Oc)");
+        yieldBoost8.addActionListener(this);
+        yieldBoost9 = new JButton("Yield Boost 9 (1No)");
+        yieldBoost9.addActionListener(this);
+        yieldBoost10 = new JButton("Yield Boost 10 (1Dc)");
+        yieldBoost10.addActionListener(this);
+
+        // Initialize land efficiency buttons
+        landEfficiency1 = new JButton("Efficient Land Use 1 (1K)");
+        landEfficiency1.addActionListener(this);
+        landEfficiency2 = new JButton("Efficient Land Use 2 (500M)");
+        landEfficiency2.addActionListener(this);
+        landEfficiency3 = new JButton("Efficient Land Use 3 (500B)");
+        landEfficiency3.addActionListener(this);
+        landEfficiency4 = new JButton("Efficient Land Use 4 (500Qa)");
+        landEfficiency4.addActionListener(this);
+        landEfficiency5 = new JButton("Efficient Land Use 5 (500Sp)");
+        landEfficiency5.addActionListener(this);
+
+        // Initialize auto farming buttons
+        autoFarm1 = new JButton("Automated Harvest 1 (100B)");
+        autoFarm1.addActionListener(this);
+        autoFarm2 = new JButton("Automated Harvest 2 (500Qi)");
+        autoFarm2.addActionListener(this);
+        autoFarm3 = new JButton("Automated Harvest 3 (50No)");
+        autoFarm3.addActionListener(this);
+
         // Add components to panels for each tab
         plantPanel.add(moneyLabel);
         plantPanel.add(landLabel);
@@ -156,7 +258,7 @@ public class FarmGame implements ActionListener {
         plantPanel.add(plantCoffee);
         plantPanel.add(plantCacao);
         plantPanel.add(plantVanilla);
-        plantPanel.add(plantSaffron );
+        plantPanel.add(plantSaffron);
         plantPanel.add(plantTruffles);
         plantPanel.add(plantMagicBeans);
         buyLandPanel.add(new JLabel("Money: $" + money));
@@ -176,10 +278,38 @@ public class FarmGame implements ActionListener {
         buyLandPanel.add(buy1DcAcresButton);
         upgradePanel.add(new JLabel("Money: $" + money));
         upgradePanel.add(new JLabel("Land: " + land + " acres"));
-        upgradePanel.add(upgradeButton);
+        cropSpeedPanel.add(growthSpeed1);
+        cropSpeedPanel.add(growthSpeed2);
+        cropSpeedPanel.add(growthSpeed3);
+        cropSpeedPanel.add(growthSpeed4);
+        cropSpeedPanel.add(growthSpeed5);
+        cropSpeedPanel.add(growthSpeed6);
+        cropSpeedPanel.add(growthSpeed7);
+        cropSpeedPanel.add(growthSpeed8);
+        cropSpeedPanel.add(growthSpeed9);
+        cropYieldPanel.add(yieldBoost1);
+        cropYieldPanel.add(yieldBoost2);
+        cropYieldPanel.add(yieldBoost3);
+        cropYieldPanel.add(yieldBoost4);
+        cropYieldPanel.add(yieldBoost5);
+        cropYieldPanel.add(yieldBoost6);
+        cropYieldPanel.add(yieldBoost7);
+        cropYieldPanel.add(yieldBoost8);
+        cropYieldPanel.add(yieldBoost9);
+        cropYieldPanel.add(yieldBoost10);
+        landEfficiencyPanel.add(landEfficiency1);
+        landEfficiencyPanel.add(landEfficiency2);
+        landEfficiencyPanel.add(landEfficiency3);
+        landEfficiencyPanel.add(landEfficiency4);
+        landEfficiencyPanel.add(landEfficiency5);
+        autoFarmingPanel.add(autoFarm1);
+        autoFarmingPanel.add(autoFarm2);
+        autoFarmingPanel.add(autoFarm3);
+        upgradePanel.add(tabbedUpgradePane);
 
         // Add the tabbed pane to the frame
         frame.add(tabbedPane);
+        upgradePanel.add(tabbedUpgradePane);
 
         // Start timer
         timer = new Timer(1000, this);
@@ -195,7 +325,7 @@ public class FarmGame implements ActionListener {
         if (e.getSource() == plantWheat) {
             BigInteger acresNeeded = BigInteger.ONE;
             if (land.compareTo(acresNeeded) >= 0) {
-                crops.add(new Crop("Wheat", 3, new BigInteger("10"), acresNeeded)); // Plant wheat with 3s growth, $10 yield, 1 acre
+                crops.add(new Crop("Wheat", (int) (3 * growthSpeedMultiplier), calculateYield(new BigInteger("10")), acresNeeded));
                 land = land.subtract(acresNeeded);
                 updateLandLabel();
                 updateCropListPanel();
@@ -203,7 +333,7 @@ public class FarmGame implements ActionListener {
         } else if (e.getSource() == plantCorn) {
             BigInteger acresNeeded = new BigInteger("500");
             if (land.compareTo(acresNeeded) >= 0) {
-                crops.add(new Crop("Corn", 4, new BigInteger("5000"), acresNeeded)); // Plant corn with 4s growth, $5000 yield, 500 acres
+                crops.add(new Crop("Corn", (int) (4 * growthSpeedMultiplier), calculateYield(new BigInteger("5000")), acresNeeded));
                 land = land.subtract(acresNeeded);
                 updateLandLabel();
                 updateCropListPanel();
@@ -211,7 +341,7 @@ public class FarmGame implements ActionListener {
         } else if (e.getSource() == plantCarrots) {
             BigInteger acresNeeded = new BigInteger("250000");
             if (land.compareTo(acresNeeded) >= 0) {
-                crops.add(new Crop("Carrot", 5, new BigInteger("25000000"), acresNeeded));
+                crops.add(new Crop("Carrot", (int) (5 * growthSpeedMultiplier), calculateYield(new BigInteger("2500000")), acresNeeded));
                 land = land.subtract(acresNeeded);
                 updateLandLabel();
                 updateCropListPanel();
@@ -219,7 +349,7 @@ public class FarmGame implements ActionListener {
         } else if (e.getSource() == plantTomatoes) {
             BigInteger acresNeeded = new BigInteger("200000000");
             if (land.compareTo(acresNeeded) >= 0) {
-                crops.add(new Crop("Tomatoes", 6, new BigInteger("1500000000"), acresNeeded));
+                crops.add(new Crop("Tomatoes", (int) (6 * growthSpeedMultiplier), calculateYield(new BigInteger("1500000000")), acresNeeded));
                 land = land.subtract(acresNeeded);
                 updateLandLabel();
                 updateCropListPanel();
@@ -227,15 +357,15 @@ public class FarmGame implements ActionListener {
         } else if (e.getSource() == plantPotatoes) {
             BigInteger acresNeeded = new BigInteger("75000000000");
             if (land.compareTo(acresNeeded) >= 0) {
-                crops.add(new Crop("Potatoes", 7, new BigInteger("750000000000"), acresNeeded));
+                crops.add(new Crop("Potatoes", (int) (7 * growthSpeedMultiplier), calculateYield(new BigInteger("750000000000")), acresNeeded));
                 land = land.subtract(acresNeeded);
                 updateLandLabel();
                 updateCropListPanel();
             }
         } else if (e.getSource() == plantApples) {
-            BigInteger acresNeeded = new BigInteger("50000000000000");
+            BigInteger             acresNeeded = new BigInteger("50000000000000");
             if (land.compareTo(acresNeeded) >= 0) {
-                crops.add(new Crop("Apples", 8, new BigInteger("250000000000000"), acresNeeded));
+                crops.add(new Crop("Apples", (int) (8 * growthSpeedMultiplier), calculateYield(new BigInteger("250000000000000")), acresNeeded));
                 land = land.subtract(acresNeeded);
                 updateLandLabel();
                 updateCropListPanel();
@@ -243,7 +373,7 @@ public class FarmGame implements ActionListener {
         } else if (e.getSource() == plantGrapes) {
             BigInteger acresNeeded = new BigInteger("20000000000000000");
             if (land.compareTo(acresNeeded) >= 0) {
-                crops.add(new Crop("Grapes", 9, new BigInteger("150000000000000000"), acresNeeded));
+                crops.add(new Crop("Grapes", (int) (9 * growthSpeedMultiplier), calculateYield(new BigInteger("150000000000000000")), acresNeeded));
                 land = land.subtract(acresNeeded);
                 updateLandLabel();
                 updateCropListPanel();
@@ -251,7 +381,7 @@ public class FarmGame implements ActionListener {
         } else if (e.getSource() == plantCoffee) {
             BigInteger acresNeeded = new BigInteger("8000000000000000000");
             if (land.compareTo(acresNeeded) >= 0) {
-                crops.add(new Crop("Coffee", 10, new BigInteger("75000000000000000000"), acresNeeded));
+                crops.add(new Crop("Coffee", (int) (10 * growthSpeedMultiplier), calculateYield(new BigInteger("75000000000000000000")), acresNeeded));
                 land = land.subtract(acresNeeded);
                 updateLandLabel();
                 updateCropListPanel();
@@ -259,7 +389,7 @@ public class FarmGame implements ActionListener {
         } else if (e.getSource() == plantCacao) {
             BigInteger acresNeeded = new BigInteger("4000000000000000000000");
             if (land.compareTo(acresNeeded) >= 0) {
-                crops.add(new Crop("Cacao", 12, new BigInteger("40000000000000000000000"), acresNeeded));
+                crops.add(new Crop("Cacao", (int) (12 * growthSpeedMultiplier), calculateYield(new BigInteger("40000000000000000000000")), acresNeeded));
                 land = land.subtract(acresNeeded);
                 updateLandLabel();
                 updateCropListPanel();
@@ -267,7 +397,7 @@ public class FarmGame implements ActionListener {
         } else if (e.getSource() == plantVanilla) {
             BigInteger acresNeeded = new BigInteger("2000000000000000000000000");
             if (land.compareTo(acresNeeded) >= 0) {
-                crops.add(new Crop("Vanilla", 14, new BigInteger("20000000000000000000000000"), acresNeeded));
+                crops.add(new Crop("Vanilla", (int) (14 * growthSpeedMultiplier), calculateYield(new BigInteger("20000000000000000000000000")), acresNeeded));
                 land = land.subtract(acresNeeded);
                 updateLandLabel();
                 updateCropListPanel();
@@ -275,7 +405,7 @@ public class FarmGame implements ActionListener {
         } else if (e.getSource() == plantSaffron) {
             BigInteger acresNeeded = new BigInteger("1000000000000000000000000000");
             if (land.compareTo(acresNeeded) >= 0) {
-                crops.add(new Crop("Saffron", 16, new BigInteger("10000000000000000000000000000"), acresNeeded));
+                crops.add(new Crop("Saffron", (int) (16 * growthSpeedMultiplier), calculateYield(new BigInteger("10000000000000000000000000000")), acresNeeded));
                 land = land.subtract(acresNeeded);
                 updateLandLabel();
                 updateCropListPanel();
@@ -283,7 +413,7 @@ public class FarmGame implements ActionListener {
         } else if (e.getSource() == plantTruffles) {
             BigInteger acresNeeded = new BigInteger("1000000000000000000000000000000");
             if (land.compareTo(acresNeeded) >= 0) {
-                crops.add(new Crop("Truffles", 18, new BigInteger("10000000000000000000000000000000"), acresNeeded));
+                crops.add(new Crop("Truffles", (int) (18 * growthSpeedMultiplier), calculateYield(new BigInteger("10000000000000000000000000000000")), acresNeeded));
                 land = land.subtract(acresNeeded);
                 updateLandLabel();
                 updateCropListPanel();
@@ -291,7 +421,7 @@ public class FarmGame implements ActionListener {
         } else if (e.getSource() == plantMagicBeans) {
             BigInteger acresNeeded = new BigInteger("1000000000000000000000000000000000");
             if (land.compareTo(acresNeeded) >= 0) {
-                crops.add(new Crop("Magic Beans", 20, new BigInteger("10000000000000000000000000000000000"), acresNeeded));
+                crops.add(new Crop("Magic Beans", (int) (20 * growthSpeedMultiplier), calculateYield(new BigInteger("10000000000000000000000000000000000")), acresNeeded));
                 land = land.subtract(acresNeeded);
                 updateLandLabel();
                 updateCropListPanel();
@@ -305,7 +435,7 @@ public class FarmGame implements ActionListener {
                 updateLandLabel();
             }
         } else if (e.getSource() == buy500AcresButton) {
-            BigInteger cost = new BigInteger("250000");
+            BigInteger cost = new BigInteger("25000");
             if (money.compareTo(cost) >= 0) {
                 money = money.subtract(cost);
                 land = land.add(new BigInteger("500"));
@@ -400,8 +530,60 @@ public class FarmGame implements ActionListener {
                 updateMoneyLabel();
                 updateLandLabel();
             }
-        } else if (e.getSource() == upgradeButton) {
-            // Implement upgrade logic (e.g., faster growth, higher yield)
+        } else if (e.getSource() == growthSpeed1) {
+            applyGrowthSpeedBoost(new BigInteger("100000000000"), growthSpeed1);
+        } else if (e.getSource() == growthSpeed2) {
+            applyGrowthSpeedBoost(new BigInteger("100000000000000"), growthSpeed2);
+        } else if (e.getSource() == growthSpeed3) {
+            applyGrowthSpeedBoost(new BigInteger("100000000000000000"), growthSpeed3);
+        } else if (e.getSource() == growthSpeed4) {
+            applyGrowthSpeedBoost(new BigInteger("100000000000000000000"), growthSpeed4);
+        } else if (e.getSource() == growthSpeed5) {
+            applyGrowthSpeedBoost(new BigInteger("100000000000000000000000"), growthSpeed5);
+        } else if (e.getSource() == growthSpeed6) {
+            applyGrowthSpeedBoost(new BigInteger("100000000000000000000000000"), growthSpeed6);
+        } else if (e.getSource() == growthSpeed7) {
+            applyGrowthSpeedBoost(new BigInteger("100000000000000000000000000000"), growthSpeed7);
+        } else if (e.getSource() == growthSpeed8) {
+            applyGrowthSpeedBoost(new BigInteger("100000000000000000000000000000000"), growthSpeed8);
+        } else if (e.getSource() == growthSpeed9) {
+            applyGrowthSpeedBoost(new BigInteger("100000000000000000000000000000000000"), growthSpeed9);
+        } else if (e.getSource() == yieldBoost1) {
+            applyYieldBoost(new BigInteger("1000000"), 1.1, yieldBoost1);
+        } else if (e.getSource() == yieldBoost2) {
+            applyYieldBoost(new BigInteger("1000000000"), 1.2, yieldBoost2);
+        } else if (e.getSource() == yieldBoost3) {
+            applyYieldBoost(new BigInteger("1000000000000"), 1.3, yieldBoost3);
+        } else if (e.getSource() == yieldBoost4) {
+            applyYieldBoost(new BigInteger("1000000000000000"), 1.4, yieldBoost4);
+        } else if (e.getSource() == yieldBoost5) {
+            applyYieldBoost(new BigInteger("1000000000000000000"), 1.5, yieldBoost5);
+        } else if (e.getSource() == yieldBoost6) {
+            applyYieldBoost(new BigInteger("1000000000000000000000"), 1.6, yieldBoost6);
+        } else if (e.getSource() == yieldBoost7) {
+            applyYieldBoost(new BigInteger("1000000000000000000000000"), 1.7, yieldBoost7);
+        } else if (e.getSource() == yieldBoost8) {
+            applyYieldBoost(new BigInteger("1000000000000000000000000000"), 1.8, yieldBoost8);
+        } else if (e.getSource() == yieldBoost9) {
+            applyYieldBoost(new BigInteger("1000000000000000000000000000000"), 1.9, yieldBoost9);
+        } else if (e.getSource() == yieldBoost10) {
+            applyYieldBoost(new BigInteger("1000000000000000000000000000000000"), 2.0, yieldBoost10);
+        } else if (e.getSource() == landEfficiency1) {
+            applyLandEfficiencyBoost(new BigInteger("1000"), 0.95, landEfficiency1);
+        } else if (e.getSource() == landEfficiency2) {
+            applyLandEfficiencyBoost(new BigInteger("500000000"), 0.90, landEfficiency2);
+        } else if (e.getSource() == landEfficiency3) {
+            applyLandEfficiencyBoost(new BigInteger("500000000000"), 0.85, landEfficiency3);
+        } else if (e.getSource() == landEfficiency4) {
+            applyLandEfficiencyBoost(new BigInteger("500000000000000"), 0.80, landEfficiency4);
+        } else if (e.getSource() == landEfficiency5) {
+            applyLandEfficiencyBoost(new BigInteger("500000000000000000"), 0.75, landEfficiency5);
+        } else if (e.getSource() == autoFarm1) {
+            applyAutoFarm(new BigInteger("100000000000"), 10, autoFarm1);
+        } else if (e.getSource() == autoFarm2) {
+            applyAutoFarm(new BigInteger("500000000000000"), 5, autoFarm2);
+        } else if (e.getSource() == autoFarm3) {
+            applyAutoFarm(new BigInteger("50000000000000000000"), 1, autoFarm3);
         } else if (e.getSource() == timer) {
             // Check for crop maturity and harvest
             for (int i = crops.size() - 1; i >= 0; i--) {
@@ -413,11 +595,55 @@ public class FarmGame implements ActionListener {
                     crops.remove(i);
                 }
             }
+            updateMoneyLabel();
+            updateLandLabel();
         }
+    }
 
-        // Update labels
-        updateMoneyLabel();
-        updateLandLabel();
+    private void applyGrowthSpeedBoost(BigInteger cost, JButton button) {
+        if (money.compareTo(cost) >= 0) {
+            money = money.subtract(cost);
+            growthSpeedMultiplier -= 0.1;
+            button.setVisible(false); // Make the button disappear
+            updateMoneyLabel();
+        }
+    }
+
+    private void applyYieldBoost(BigInteger cost, double multiplier, JButton button) {
+        if (money.compareTo(cost) >= 0) {
+            money = money.subtract(cost);
+            yieldMultiplier *= multiplier;
+            button.setVisible(false); // Make the button disappear
+            updateMoneyLabel();
+        }
+    }
+
+    private void applyLandEfficiencyBoost(BigInteger cost, double multiplier, JButton button) {
+        if (money.compareTo(cost) >= 0) {
+            money = money.subtract(cost);
+            for (Crop crop : crops) {
+                BigInteger newAcres = new BigDecimal(crop.getAcres()).multiply(BigDecimal.valueOf(multiplier)).toBigInteger();
+                crop.setAcres(newAcres);
+            }
+            button.setVisible(false); // Make the button disappear
+            updateMoneyLabel();
+        }
+    }
+
+    private void applyAutoFarm(BigInteger cost, int interval, JButton button) {
+        if (money.compareTo(cost) >= 0) {
+            money = money.subtract(cost);
+            Timer autoFarmTimer = new Timer(interval * 1000, new ActionListener() {
+                public void actionPerformed(ActionEvent evt) {
+                    money = money.add(land.multiply(BigInteger.valueOf(15)));
+                    updateMoneyLabel();
+                    updateLandLabel();
+                }
+            });
+            autoFarmTimer.start();
+            button.setVisible(false); // Make the button disappear
+            updateMoneyLabel();
+        }
     }
 
     // Helper method to update the money label
@@ -471,6 +697,11 @@ public class FarmGame implements ActionListener {
     // Helper method to update the crop list panel
     private void updateCropListPanel() {
         // Update crop list panel if needed
+    }
+
+    // Helper method to calculate the yield based on the current multiplier
+    private BigInteger calculateYield(BigInteger baseYield) {
+        return baseYield.multiply(BigDecimal.valueOf(yieldMultiplier).toBigInteger());
     }
 
     // Main method to start the game

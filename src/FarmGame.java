@@ -103,7 +103,7 @@ public class FarmGame implements ActionListener {
     private java.util.List<Achievement> achievements = new ArrayList<>();
     private List<Timer> autoFarmTimers = new ArrayList<>();
     private Set<String> plantedCrops = new HashSet<>();
-    private BigInteger money = new BigInteger("1000000");
+    private BigInteger money = new BigInteger("0");
     private BigInteger land = new BigInteger("1");
     private Timer timer;
     private double growthSpeedMultiplier = 1.0;

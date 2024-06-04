@@ -42,6 +42,8 @@ Welcome to Idle Farm, a humorous and engaging idle farming simulation game! Watc
 ## Controls
 
 - **Mouse:** Use the mouse to navigate through tabs, select crops, buy land, and apply upgrades.
+- **Keyboard:** Use Tab to move button select down and shift Tab to move it up, when selecting a tab button, use Arrow 
+Keys to navigate through the tabs
 
 ## System Requirements
 
